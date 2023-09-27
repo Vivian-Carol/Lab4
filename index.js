@@ -5,6 +5,10 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "./public")));
 
+const mustache = require('mustache-express');
+app.engine('mustache', mustache());
+app.set('view engine', 'mustache')
+
 const nedb = require("gray-nedb");
 const db = new nedb({ filename: 'emp.db', autoload: true });
 
@@ -83,7 +87,9 @@ app.post("/view", function (req, res) {
             console.log("error", err);
         } else {
             console.log("document retrieved: ", docs);
-            res.json(docs);
+            res.render('employeeData', {
+                'employee': docs
+            });
         }
     });
 });
@@ -132,6 +138,18 @@ db.find({ name: 'John Brown' }, function (err, docs) {
         console.log('document is here: ', docs);
     }
 })
+
+//showAll
+app.post("/showAll", function (req, res) {
+    db.find({}, function (err, newDoc) { // Here we use find method to fetch all records
+        if (err) {
+            console.log("error", err);
+        } else {
+            console.log("document inserted", newDoc);  // Terminal
+            res.json(newDoc); // Send the data to Front-end
+        }
+    });
+});
 
 app.listen(3000, () => {
     console.log("Server listening on port: 3000");
