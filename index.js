@@ -101,33 +101,43 @@ app.post("/add", function (req, res) {
             console.log("error", err);
         } else {
             console.log("document inserted", newDoc);  // Terminal
-            res.json(newDoc); // FE
+            res.render('employeeData', {
+                'employee': newDoc
+                }); // FE
         }
     });
 });
 
 //update
 app.post("/update", function (req, res) {
-    db.update({ name: req.body.name }, function (err, docs) {
+    db.update({ name: req.body.id }, {
+        $set: { 'name': req.body.name }
+    }, {}, function (err, docs) {
         if (err) {
             console.log("error", err);
         } else {
-            console.log("document updated", docs);
-            res.json(docs);
+            console.log(req.body.id + " updated to " + req.body.name);
+            res.json(req.body.id + " updated to " + req.body.name);
+            res.render('employeeData', {
+                'employee': docs
+                });
         }
     });
 });
 
 //delete
 app.post("/delete", function (req, res) {
-    db.remove({ name: req.body.name }, function (err, docs) {
+    db.remove({ name: req.body.id }, {}, function (err, docsRem) {
         if (err) {
-            console.log("error", err);
+            console.log('error deleting document');
         } else {
-            console.log("document removed", docs);
-            res.json(docs);
+            console.log(req.body.id, 'document removed from database')
+            res.json(req.body.id, 'document removed from database');
+            res.render('employeeData', {
+                'employee': docsRem
+                });
         }
-    });
+    })
 });
 
 db.find({ name: 'John Brown' }, function (err, docs) {
@@ -146,7 +156,9 @@ app.post("/showAll", function (req, res) {
             console.log("error", err);
         } else {
             console.log("document inserted", newDoc);  // Terminal
-            res.json(newDoc); // Send the data to Front-end
+            res.render('employeeData', {
+                'employees': newDoc
+                }); // Send the data to Front-end
         }
     });
 });
