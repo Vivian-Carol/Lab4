@@ -14,6 +14,15 @@ const db = new nedb({ filename: 'emp.db', autoload: true });
 
 console.log('db created');
 
+// Delete all documents from the database
+db.remove({}, { multi: true }, function (err, numRemoved) {
+    if (err) {
+        console.log('error deleting all documents');
+    } else {
+        console.log(numRemoved + ' documents removed from database');
+    }
+});
+
 //Display interface
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, './public/index.html'));
@@ -140,14 +149,14 @@ app.post("/delete", function (req, res) {
     })
 });
 
-db.find({ name: 'John Brown' }, function (err, docs) {
-    if (err) {
-        console.log('error');
-    }
-    else {
-        console.log('document is here: ', docs);
-    }
-})
+// Delete all documents from the database
+// db.remove({}, { multi: true }, function (err, numRemoved) {
+//     if (err) {
+//         console.log('error deleting all documents');
+//     } else {
+//         console.log(numRemoved + ' documents removed from database');
+//     }
+// });
 
 //showAll
 app.post("/showAll", function (req, res) {
@@ -163,6 +172,8 @@ app.post("/showAll", function (req, res) {
     });
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
     console.log("Server listening on port: 3000");
 });
+
+module.exports = { app, server };
